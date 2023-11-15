@@ -12,7 +12,17 @@ ui <- dashboardPage(
   dashboardSidebar(disable = TRUE),
   
   dashboardBody(
-    tags$style("body { background-color: ghostwhite}"),
+    tags$style(
+      "body { background-color: ghostwhite; color: black; }",
+      ".sidebar { background-color: black; }",
+      ".main-header .navbar { background-color: darkslategray; }",
+      ".main-header .logo { color: dimgray; }",
+      ".main-header .navbar .sidebar-toggle:hover { background-color: darkslategray; }",
+      ".main-header .navbar .sidebar-toggle { color: dimgray; }",
+      ".main-header .navbar .sidebar-toggle .icon-bar { background-color: dimgray; }",
+      ".content-wrapper { background-color: dimgray; }",
+      ".main-footer { background-color: darkslategray; color: dimgray; }"
+    ),
     
     fluidRow(
       box(
@@ -31,23 +41,23 @@ ui <- dashboardPage(
         title = 'Eficiencia Naive Bayes',
         id='mynaiveR',
         textOutput('text_naive_head'),
-        background = "teal",
+        background = "green",  # Verde oscuro
         icon = icon("stats", lib = "glyphicon")
       ),
       box(
         title = 'Eficiencia Random Forest',
         id='myrandomR',
         textOutput('text_random_head'),
-        background = "teal",
+        background = "green",  # Verde oscuro
         icon = icon("tree-deciduous", lib = "glyphicon")
       ),
     ),
     fluidRow(
       box(
         actionButton("restore_box", "Eficiencia Naive Bayes", class = "bg-success", icon("hand-up", lib = "glyphicon"),
-                     style="color: #fff; background-color: #f24b59; border-color: #f24b4b"),
+                     style="color: white; background-color: green; border-color: green"),  # Verde oscuro
         actionButton("forest_box", "Eficiencia Random Forest", class = "bg-forest", icon("hand-up", lib = "glyphicon"),
-                     style="color: #fff; background-color: #f24b59; border-color: #f24b4b")
+                     style="color: white; background-color: green; border-color: green")  # Verde oscuro
       ),
     ),
     br(),
@@ -56,7 +66,7 @@ ui <- dashboardPage(
       id = "mybox",
       collapsible = TRUE,
       closable = TRUE,
-      valueBox(59, "%", color = "orange"),
+      valueBox(59, "%", color = "green"),  # Verde oscuro
       textOutput('prec_naive'),
       icon = icon("stats", lib = "glyphicon")
     ),
@@ -66,7 +76,7 @@ ui <- dashboardPage(
       collapsible = TRUE,
       closable = TRUE,
       textOutput('prec_random'),
-      valueBox(56, "%", color = "orange"),
+      valueBox(56, "%", color = "green"),  # Verde oscuro
       icon = icon("tree-deciduous", lib = "glyphicon")
     ),
     fluidRow(
@@ -74,13 +84,15 @@ ui <- dashboardPage(
         title = "Nube de Palabras",
         width = 6,
         height = 300,
-        plotOutput("wordcloudPlot")
+        plotOutput("wordcloudPlot"),
+        background = "light-blue"  # Cambiar a tu color de fondo deseado
       ),
       box(
         title = "Histograma de Palabras",
         width = 6,
         height = 300,
-        plotOutput("histogramPlot")
+        plotOutput("histogramPlot"),
+        background = "light-blue"  # Cambiar a tu color de fondo deseado
       )
     )
   )
@@ -116,7 +128,8 @@ server <- function(input, output, session) {
           stop_words <- stopwords("english")
           words <- words[!words %in% stop_words]
           word_freq <- table(words)
-          barplot(word_freq, main = "Frecuencia de Palabras", col = "skyblue", las = 2)
+          barplot(word_freq, main = "Frecuencia de Palabras", col = "green",  # Verde oscuro
+                  las = 2)
         })
       }
     }
@@ -132,6 +145,24 @@ server <- function(input, output, session) {
         output$text_random_head <- renderText({
           source('SVM.R')
           paste(head(randomForestPredic(input$texto), 1))
+        })
+        
+        # Nube de palabras
+        output$wordcloudPlot <- renderPlot({
+          words <- unlist(strsplit(tolower(input$texto), "\\W+"))
+          stop_words <- stopwords("spanish")
+          words <- words[!words %in% stop_words]
+          wordcloud(words)
+        })
+        
+        # Histograma de palabras
+        output$histogramPlot <- renderPlot({
+          words <- unlist(strsplit(tolower(input$texto), "\\W+"))
+          stop_words <- stopwords("english")
+          words <- words[!words %in% stop_words]
+          word_freq <- table(words)
+          barplot(word_freq, main = "Frecuencia de Palabras", col = "green",  # Verde oscuro
+                  las = 2)
         })
       }
     }
