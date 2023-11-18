@@ -1,10 +1,11 @@
 #Import libraries
 
-
 naiveBayesFun<-function(textoPred){
   
 
 library(tm)
+
+  
 library(SnowballC)
 library(wordcloud)
 library(RColorBrewer) 
@@ -27,6 +28,7 @@ db_ef<-subset(db,db$Tag=='Effective')
 
 db_ade<-head(db_ade,300)
 db_in<-head(db_in,300)
+  
 db_ef<-head(db_ef,300)
 
 db<-rbind(db_ade,db_in,db_ef)
@@ -146,10 +148,12 @@ naiveBayesFun_Ac<-function(textoPred){
   
   db$Tag<-factor(db$Tag)
   
-  # creating our corpus
+
   
   # db<-tail(db,200)
   text_corpus <- VCorpus(VectorSource(db$Msg))
+
+
   
   # Viewing the content of more than one texts using lapply() function
   lapply(text_corpus[1:5], as.character) 
@@ -183,6 +187,9 @@ naiveBayesFun_Ac<-function(textoPred){
   # spamText <- subset(db, Tag == "Adequate") 
   # wordcloud(spamText$Msg, max.words = 50, scale = c(5, 0.3),random.order = FALSE, rot.per = 0.15, colors = brewer.pal(8, "Dark2") )
   # 
+
+
+  
   # hamText <- subset(db, Tag =="Ineffective") # selecting ham texts
   # wordcloud(hamText$Msg, max.words = 50, scale = c(5, 0.3),random.order = FALSE, rot.per = 0.15, colors = brewer.pal(8, "Dark2"))
   
@@ -277,14 +284,11 @@ naiveBayesFun_Ac<-function(textoPred){
 # 
 # lapply(text_corpus_test, as.character) 
 # 
-# cleanCorpus_test_df <- tm_map(text_corpus_test, content_transformer(tolower)) # lowercase all texts
-# cleanCorpus_test_df <- tm_map(cleanCorpus_test_df, removeNumbers) # remove all numbers
-# cleanCorpus_test_df <- tm_map(cleanCorpus_test_df, removeWords, stopwords('english')) # remove all common words such as to, but and etc.
-# cleanCorpus_test_df <- tm_map(cleanCorpus_test_df, removePunctuation) # remove all punctuation
-# cleanCorpus_test_df <- tm_map(cleanCorpus_test_df, stripWhitespace) # remove all whitespace
-# 
+
 # text_dtm_test <- DocumentTermMatrix(cleanCorpus_test_df)
 # 
+
+
 # 
 # inspect(text_dtm_test)
 # 
