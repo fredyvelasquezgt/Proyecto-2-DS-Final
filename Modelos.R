@@ -71,6 +71,56 @@ knn.pred<- knn(tdm.stack.nl[train.idx,],tdm.stack.nl[test.idx,],tdm.cand[train.i
 
 conf.mat<- table('predictions'=knn.pred, Actual=tdm.cand[test.idx])
 
+#-------------------------------------------------------------------------------------------------new
+
+# Palabras objetivo
+text_predict <- c('efectivos', 'adecuados', 'ineficaces')
+
+# Limpiamos el texto
+clean_text <- function(text) {
+  text <- tolower(text)
+  text <- removePunctuation(text)
+  text <- removeWords(text, stopwords('english'))
+  return(text)
+}
+
+db$cleaned_text <- sapply(db$discourse_text, clean_text)
+
+# Crear una matriz de términos y documentos
+corpus <- Corpus(VectorSource(db$cleaned_text))
+tdm <- DocumentTermMatrix(corpus)
+
+# Función para generar TDM para una palabra objetivo
+generateTDM <- function(text_predict, tdm) {
+  target_rows <- grep(paste(text_predict, collapse = "|"), rownames(tdm))
+  return(as.data.frame(tdm[target_rows, ]))
+}
+
+# Crear una lista de TDM para cada palabra objetivo
+tdm_list <- lapply(text_predict, generateTDM, tdm)
+
+# Combina las TDM en un único marco de datos
+tdm_combined <- do.call(rbind.fill, tdm_list)
+
+# Agregar la columna target
+tdm_combined$target <- rep(text_predict, each = nrow(tdm_list[[1]]))
+
+# Muestra del conjunto de datos
+head(tdm_combined)
+
+# Partición de datos en conjuntos de entrenamiento y prueba
+set.seed(123)
+train_idx <- sample(nrow(tdm_combined), ceiling(nrow(tdm_combined) * 0.7))
+train_data <- tdm_combined[train_idx, ]
+test_data <- tdm_combined[-train_idx, ]
+
+# Modelo KNN
+knn_pred <- knn(train_data[, -ncol(train_data)], test_data[, -ncol(test_data)], train_data$target, k = 3)
+
+# Evaluación del modelo
+conf_mat <- table('predictions' = knn_pred, 'Actual' = test_data$target)
+print(conf_mat)
+
 
 
 
